@@ -57,13 +57,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JSON\Class1.cs" />
+    <Compile Include="JSON\Converters.cs" />
+    <Compile Include="JSON\ImportFile.cs" />
+    <Compile Include="JSON\ClassAndInstancesReference.cs" />
+    <Compile Include="JSON\ClassReference.cs" />
+    <Compile Include="JSON\Connector.cs" />
+    <Compile Include="JSON\InstanceCollection.cs" />
+    <Compile Include="JSON\InstanceReference.cs" />
+    <Compile Include="JSON\ManagingActionPoint.cs" />
+    <Compile Include="JSON\PropertyValue.cs" />
+    <Compile Include="JSON\ResourcePool.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ConfigurationSchema.json" />
+    <None Include="JSON\ConfigurationSchema.json" />
     <None Include="Example_Configuration.json" />
     <None Include="packages.config" />
   </ItemGroup>
