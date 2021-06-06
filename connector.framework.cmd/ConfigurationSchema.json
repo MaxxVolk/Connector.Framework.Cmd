@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "$id": "http://json-schema.org/Maximus/ConnectorFrameworkCommandLine/schema",
+  "title": "JSON Schema for my SCOM Connector Framework Command Line utility file format",
+
+  "type": "object",
+  "properties": {
+    "Connector": {
+      "type": "object",
+      "properties": {
+        "DisplayName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string",
+          "format": "regex",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        }
+      },
+      "oneOf": [
+        { "required": [ "DisplayName" ] },
+        { "required": [ "Id" ] }
+      ]
+    },
+    "ClassAndInstaces": {
+      "$ref": "#/definitions/ClassAndInstancesReference"
+    }
+    
+  },
+  "definitions": {
+    "InstanceReference": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "string",
+          "format": "regex",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "Class": {
+          "$ref": "#/definitions/ClassReference"
+        },
+        "ClassInstanceKey": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [ "boolean", "integer", "number", "string", "null" ]
+          }
+        }
+      },
+      "oneOf": [
+        { "required": [ "Id" ] },
+        { "required": [ "Class", "ClassInstanceKey" ] }
+      ]
+    },
+    "ClassReference": {
+      "type": "object",
+      "description": "Class is defined by either an Id (Guid) OR an MP name plus a class name.",
+      "properties": {
+        "ClassId": {
+          "type": "string",
+          "format": "regex",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "ClassManagementPack": {
+          "type": "string"
+        },
+        "ClassName": {
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        { "required": [ "ClassId" ] },
+        { "required": [ "ClassManagementPack", "ClassName" ] }
+      ]
+    },
+    "ClassAndInstancesReference": {
+      "type": "object",
+      "properties": {
+        "Class": {
+          "$ref": "#/definitions/ClassReference"
+        },
+        "InstanceCollection": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Operation": {
+                "type": "string",
+                "enum": [ "AddUpdate", "Remove" ]
+              },
+              "Properties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": [ "boolean", "integer", "number", "string", "null" ]
+                }
+              },
+              "Host": {
+                "$ref": "#/definitions/InstanceReference"
+              },
+              "ManagingActionPoint": {
+                "type": "object",
+                "properties": {
+                  "HealthService": {
+                    "type": "string",
+                    "format": "hostname"
+                  },
+                  "ResourcePool": {
+                    "type": "object",
+                    "properties": {
+                      "DisplayName": {
+                        "type": "string"
+                      },
+                      "Id": {
+                        "type": "string",
+                        "format": "regex",
+                        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                      }
+                    },
+                    "oneOf": [
+                      { "required": [ "DisplayName" ] },
+                      { "required": [ "Id" ] }
+                    ]
+                  }
+                }
+              },
+              "Children": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ClassAndInstancesReference"
+                }
+              }
+            },
+            "oneOf": [
+              { "required": [ "Operation", "Properties" ] },
+              { "required": [ "Operation", "Properties", "Children" ] },
+              { "required": [ "Operation", "Properties", "Host" ] },
+              { "required": [ "Operation", "Properties", "Host", "Children" ] },
+              { "required": [ "Operation", "Properties", "ManagingActionPoint" ] },
+              { "required": [ "Operation", "Properties", "ManagingActionPoint", "Children" ] }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
