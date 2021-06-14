@@ -1,11 +1,9 @@
 {
   "Connector": {
-    "DisplayName": "", "Id": ""
-
+    "DisplayName": "CMD Test Connector"
   },
   "ClassAndInstaces": {
     "Class": {
-      //"ClassId": "95d30868-704a-4889-bf89-2ee4ec84c7eb",
       "ClassManagementPack": "connector.framework.cmd.test.classes",
       "ClassName": "connector.framework.cmd.test.classes.UnhostedClass"
     },
@@ -13,13 +11,18 @@
       {
         "Operation": "AddUpdate",
         "Properties": {
-          "PrincipalName": 5,
-          "xxx": "dd"
-        },
-        "ManagingActionPoint": {
-          "ResourcePool": {
-            "DisplayName": "sss"
-          }
+          "System.Entity\\DisplayName": "Test instance 10",
+          "KeyPropertyInt": 2,
+          "connector.framework.cmd.test.classes.BaseUnhostedClass\\DataPropertyString": "some data",
+          "KeyProperty": "00fe0e0d-de63-6d8d-594f-699df7415fa7",
+          "connector.framework.cmd.test.classes.UnhostedClass\\DataPropertyString": 5,
+          "DataPropertyEnum": "connector.framework.cmd.test.classes.TestEnum.Option_01",
+          "DataPropertyInt": 5,
+          "DataPropertyDouble": 8,
+          "DataPropertyDecimal": "3.5565438905425657",
+          "DataPropertyDateTime": "2021-06-14T21:59:02.2062855+12:00",
+          "DataPropertyBool": false,
+          "DataPropertyRichtext": "A poem 2."
         }
       }
     ]

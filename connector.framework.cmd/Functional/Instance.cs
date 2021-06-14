@@ -11,7 +11,7 @@ namespace connector.framework.cmd
   public partial class Instance
   {
     protected ManagementGroup ManagementGroup { get; set; }
-    protected Dictionary<Guid, PropertyAndValue> PropertyMap = null;
+    protected Dictionary<Guid, PropertyAndValue> _PropertyMap = null;
 
     public void BindToManagementGroup(ManagementGroup managementGroup)
     {
@@ -21,6 +21,8 @@ namespace connector.framework.cmd
       Host?.BindToManagementGroup(managementGroup);
       ManagingActionPoint?.BindToManagementGroup(managementGroup);
     }
+
+    public Dictionary<Guid, PropertyAndValue> PropertyMap => _PropertyMap;
 
     public IList<VerificationResult> Verify(ClassReference classDef)
     {
@@ -69,7 +71,7 @@ namespace connector.framework.cmd
           result.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, "No properties are defined.");
         else
         {
-          PropertyMap = BuildPropertyMap(currentClass, result);
+          _PropertyMap = BuildPropertyMap(currentClass, result);
 
         }
       }
@@ -111,10 +113,10 @@ namespace connector.framework.cmd
             if (targetsByName.Count() == 1)
             {
               result[targetsByName.First()].Value = jsonProperty.Value;
-              result[jId].ValueAssigned = true;
+              result[targetsByName.First()].ValueAssigned = true;
             }
             else
-              errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Warning, $"The target class and its parent class(es) contains multiple properties named {jsonProperty.Key}. Value binding is ambigous.");
+              errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Warning, $"The target class and its parent class(es) contains multiple properties named {jsonProperty.Key}. Value binding is ambigous. Use 'management.pack.name\\class.name' to resolve.");
           }
           else
             errorList.AppendVerification(VerificationAction.DisplayOnly, VerificationOutcome.Warning, $"Source data contains a property with name {jsonProperty.Key}, but the target class (or it's parent classes) don't have a propery with such name.");
@@ -123,12 +125,12 @@ namespace connector.framework.cmd
         // name and class name
         {
           string className = jsonProperty.Key.Substring(0, pathSeparator).ToUpperInvariant();
-          string propertyName = jsonProperty.Key.Substring(pathSeparator + 1, jsonProperty.Key.Length - pathSeparator).ToUpperInvariant();
+          string propertyName = jsonProperty.Key.Substring(pathSeparator + 1, jsonProperty.Key.Length - pathSeparator - 1).ToUpperInvariant();
           IEnumerable<Guid> targetByNameAndClass = result.Where(r => r.Value.ManagementPackProperty.Name.ToUpperInvariant() == propertyName && r.Value.ManagementPackProperty.ParentElement.Name.ToUpperInvariant() == className).Select(o => o.Key);
           if (targetByNameAndClass.Any())
           {
             result[targetByNameAndClass.First()].Value = jsonProperty.Value;
-            result[jId].ValueAssigned = true;
+            result[targetByNameAndClass.First()].ValueAssigned = true;
           }
           else
             errorList.AppendVerification(VerificationAction.DisplayOnly, VerificationOutcome.Warning, $"Source data contains a property with class\\name {jsonProperty.Key}, but the target class (or it's parent classes) don't have a propery with such name.");
@@ -169,7 +171,7 @@ namespace connector.framework.cmd
                 pnv.ValueParsed = true;
               }
               else
-                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as boolean for for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as boolean for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
             case ManagementPackEntityPropertyTypes.datetime:
               if (!string.IsNullOrWhiteSpace(pnv.Value.String) && DateTime.TryParse(pnv.Value.String, null, System.Globalization.DateTimeStyles.AssumeLocal, out DateTime strDate))
@@ -178,7 +180,7 @@ namespace connector.framework.cmd
                 pnv.ValueParsed = true;
               }
               else
-                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as date and time for for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as date and time for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
             case ManagementPackEntityPropertyTypes.@decimal:
               if (!string.IsNullOrWhiteSpace(pnv.Value.String) && decimal.TryParse(pnv.Value.String, out decimal strDecimal))
@@ -197,7 +199,7 @@ namespace connector.framework.cmd
                 pnv.ValueParsed = true;
               }
               else
-                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as decimal for for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as decimal for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
             case ManagementPackEntityPropertyTypes.@double:
               if (pnv.Value.Double != null)
@@ -231,7 +233,7 @@ namespace connector.framework.cmd
                   errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"'{pnv.Value}' is not a valid enum value for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               }
               else
-                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as enum for for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as enum for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
             case ManagementPackEntityPropertyTypes.guid:
               if (!string.IsNullOrWhiteSpace(pnv.Value.String) && Guid.TryParse(pnv.Value.String, out Guid strGuid))
@@ -240,12 +242,12 @@ namespace connector.framework.cmd
                 pnv.ValueParsed = true;
               }
               else
-                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as guid for for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as guid for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
             case ManagementPackEntityPropertyTypes.@int:
               if (pnv.Value.Integer != null)
               {
-                pnv.ValueData = pnv.Value.Integer;
+                pnv.ValueData = Convert.ToInt32(pnv.Value.Integer); // from long, in fact
                 pnv.ValueParsed = true;
               }
               else if (!string.IsNullOrWhiteSpace(pnv.Value.String) && int.TryParse(pnv.Value.String, out int strInt))
@@ -254,7 +256,7 @@ namespace connector.framework.cmd
                 pnv.ValueParsed = true;
               }
               else
-                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as int for for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as int for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
             case ManagementPackEntityPropertyTypes.richtext:
             case ManagementPackEntityPropertyTypes.@string:
@@ -265,6 +267,8 @@ namespace connector.framework.cmd
                 if (pnv.ValueData == null)
                   errorList.AppendVerification(VerificationAction.DisplayOnly, VerificationOutcome.Informational, $"No value specidied for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name} property. However, null is a valid string value.");
               }
+              else
+                errorList.AppendVerification(VerificationAction.Stop, VerificationOutcome.Critical, $"Failed to cast {pnv.Value} as string for the {pnv.ManagementPackProperty.DisplayName ?? pnv.ManagementPackProperty.Name}.");
               break;
           }
       }

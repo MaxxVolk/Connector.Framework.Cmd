@@ -1,4 +1,8 @@
 ﻿using Microsoft.EnterpriseManagement;
+using Microsoft.EnterpriseManagement.Common;
+using Microsoft.EnterpriseManagement.Configuration;
+using Microsoft.EnterpriseManagement.ConnectorFramework;
+using Microsoft.EnterpriseManagement.Monitoring;
 using Microsoft.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 using System;
@@ -15,7 +19,7 @@ namespace connector.framework.cmd
 {
   class Program
   {
-    private static CommandArgument importCmdArgument, exportCmdArgument;
+    private static CommandArgument importCmdArgument, exportCmdArgument, createConnectorCmdArgument;
     private static CommandLineApplication commandLineApplication;
     private static CommandOption managementServerOption, connectorNameOption, connectorDescriptionOption, connectorDDIsManagedOption, 
       passwordOption, usernameOption, interactiveCredentialsOption;
@@ -41,7 +45,7 @@ namespace connector.framework.cmd
 
     private static void ConfigureCreateConnector(CommandLineApplication createConnectorCommand)
     {
-      createConnectorCommand.Argument("DisplayName", "Display name of a new connector.", multipleValues: false);
+      createConnectorCmdArgument = createConnectorCommand.Argument("DisplayName", "Display name of a new connector.", multipleValues: false);
       connectorNameOption = createConnectorCommand.Option("--connectorName <name>", "Connector name.", CommandOptionType.SingleValue);
       connectorDescriptionOption = createConnectorCommand.Option("--connectorDescription <description>", "Connector description.", CommandOptionType.SingleValue);
       connectorDDIsManagedOption = createConnectorCommand.Option("--connectorDiscoveryDataIsManaged <true_or_false>", "Specifies id instances inserted via the connector should be managed or not. True if not specified.", CommandOptionType.SingleValue);
@@ -52,6 +56,29 @@ namespace connector.framework.cmd
     {
       if (DoConnectManagementGroup() != 0)
         return -1;
+      string cDisplayName = createConnectorCmdArgument.Value;
+      if (string.IsNullOrEmpty(cDisplayName))
+      {
+        Console.WriteLine("Connector Displa Name must not be empty.");
+        return -1;
+      }
+      string cName = connectorNameOption.Value() ?? cDisplayName;
+      string cDescription = connectorDescriptionOption.Value() ?? "";
+      bool DDIM = connectorDDIsManagedOption.HasValue() ? bool.Parse(connectorDDIsManagedOption.Value()) : true;
+      Guid cId = Guid.NewGuid();
+
+      MonitoringConnector myConnnector = managementGroup.ConnectorFramework.Setup(new ConnectorInfo()
+      {
+        Name = cName,
+        DisplayName = cDisplayName,
+        Description = cDescription,
+        DiscoveryDataIsManaged = DDIM
+      }, cId);
+      if (!myConnnector.Initialized)
+        myConnnector.Initialize();
+
+      Console.WriteLine($"Connector created successfully. Connector Id: {myConnnector.Id}");
+
       return 0;
     }
 
@@ -73,16 +100,82 @@ namespace connector.framework.cmd
       IList<VerificationResult> verificationResults = sourceData.Verify();
       bool stop = false;
       bool approved = true;
-      foreach(VerificationResult vr in verificationResults)
+      foreach(VerificationResult vr in verificationResults.Where(v=>v.VerificationAction != VerificationAction.ApprovalRequired))
       {
         Console.WriteLine($"{vr.VerificationAction} | {vr.VerificationOutcome} : {vr.Message}");
         stop |= vr.VerificationAction == VerificationAction.Stop;
-        if (vr.VerificationAction == VerificationAction.ApprovalRequired)
-        {
-
-        }
       }
+      if (stop)
+      {
+        Console.WriteLine("Some errors don't allow to proceed further. Fix and try again.");
+        return -1;
+      }  
+      foreach (VerificationResult vr in verificationResults.Where(v => v.VerificationAction == VerificationAction.ApprovalRequired))
+      {
+        Console.WriteLine($"{vr.VerificationAction} | {vr.VerificationOutcome} : {vr.Message}");
+        Console.Write("Enter [Y]es or [N]o: ");
+        string inp;
+        do
+        {
+          inp = Console.ReadLine();
+        } while (string.IsNullOrEmpty(inp) && inp.Length < 1);
+        approved &= inp.ToUpperInvariant()[0] == 'Y';
+      }
+      if (!approved)
+      {
+        Console.WriteLine("Operation cancelled");
+        return -1;
+      }
+
+      PerformDiscovery(managementGroup, sourceData);
+
       return 0;
+    }
+
+    private static void PerformDiscovery(ManagementGroup mg, ImportFile sourceData)
+    {
+      // connector
+      MonitoringConnector myConnector = sourceData.Connector?.MonitoringConnector;
+      if (myConnector == null)
+      {
+        // use default
+        myConnector = mg.ConnectorFramework.GetConnector(mg.ConnectorFramework.GetDefaultConnectorId());
+      }
+
+      // class
+      ManagementPackClass myClass = sourceData.ClassAndInstaces.Class.ManagementPackClass;
+
+      // instances
+      
+      foreach (Instance instanceDef in sourceData.ClassAndInstaces.InstanceCollection)
+      {
+        IncrementalDiscoveryData incrementalDiscovery = new IncrementalDiscoveryData();
+        CreatableEnterpriseManagementObject newInstance = new CreatableEnterpriseManagementObject(mg, myClass);
+        foreach (KeyValuePair<Guid, PropertyAndValue> propPair in instanceDef.PropertyMap)
+          if (propPair.Value.ValueParsed)
+            newInstance[propPair.Value.ManagementPackProperty].Value = propPair.Value.ValueData;
+        if (instanceDef.Host != null)
+          throw new NotSupportedException();
+        if (instanceDef.Operation == Operation.AddUpdate && instanceDef.ManagingActionPoint != null)
+          throw new NotSupportedException();
+        if (instanceDef.Operation == Operation.AddUpdate)
+          incrementalDiscovery.Add(newInstance);
+        if (instanceDef.Operation == Operation.Remove)
+          incrementalDiscovery.Remove(newInstance);
+
+        bool objectExists = false;
+        try
+        {
+          mg.EntityObjects.GetObject<EnterpriseManagementObject>(newInstance.Id, ObjectQueryOptions.Default);
+          objectExists = true;
+        }
+        catch (ObjectNotFoundException) { }
+
+        if (instanceDef.Operation == Operation.AddUpdate && objectExists)
+          incrementalDiscovery.Overwrite(myConnector);
+        else
+          incrementalDiscovery.Commit(myConnector);
+      }
     }
 
     private static void ConfigureImport(CommandLineApplication importCommand)

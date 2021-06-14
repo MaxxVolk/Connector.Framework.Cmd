@@ -1,5 +1,6 @@
 ﻿using Microsoft.EnterpriseManagement;
 using Microsoft.EnterpriseManagement.Common;
+using Microsoft.EnterpriseManagement.ConnectorFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,9 @@ namespace connector.framework.cmd
     {
       ManagementGroup = managementGroup;
     }
+
+    private MonitoringConnector _MonitoringConnector;
+    public MonitoringConnector MonitoringConnector => _MonitoringConnector;
 
     public IList<VerificationResult> Verify()
     {
@@ -39,7 +43,7 @@ namespace connector.framework.cmd
       {
         try
         {
-          ManagementGroup.ConnectorFramework.GetConnector(connectorId);
+          MonitoringConnector _MonitoringConnector = ManagementGroup.ConnectorFramework.GetConnector(connectorId);
         }
         catch (ObjectNotFoundException)
         {
@@ -53,7 +57,8 @@ namespace connector.framework.cmd
       }
       if (!string.IsNullOrWhiteSpace(DisplayName))
       {
-        if (ManagementGroup.ConnectorFramework.GetConnectors().FirstOrDefault(c => c.DisplayName.ToLowerInvariant() == DisplayName.ToLowerInvariant()) == null)
+        _MonitoringConnector = ManagementGroup.ConnectorFramework.GetConnectors().FirstOrDefault(c => c.DisplayName.ToLowerInvariant() == DisplayName.ToLowerInvariant());
+        if (_MonitoringConnector == null)
           result.Add(new VerificationResult
           {
             VerificationOutcome = VerificationOutcome.Critical,

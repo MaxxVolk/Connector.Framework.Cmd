@@ -94,7 +94,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties example_3configuration_1json__JsonSchema="http://json-schema.org/Maximus/ConnectorFrameworkCommandLine/schema" />
+      <UserProperties example_3configuration_1json__JsonSchema="JSON\ConfigurationSchema.json" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

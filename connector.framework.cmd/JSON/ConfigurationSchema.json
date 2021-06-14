@@ -129,13 +129,10 @@
                 }
               }
             },
-            "oneOf": [
-              { "required": [ "Operation", "Properties" ] },
-              { "required": [ "Operation", "Properties", "Children" ] },
-              { "required": [ "Operation", "Properties", "Host" ] },
-              { "required": [ "Operation", "Properties", "Host", "Children" ] },
-              { "required": [ "Operation", "Properties", "ManagingActionPoint" ] },
-              { "required": [ "Operation", "Properties", "ManagingActionPoint", "Children" ] }
+            "allOf": [
+              {
+                "required": [ "Operation", "Properties" ] 
+              }
             ]
           }
         }

@@ -14,12 +14,5 @@ namespace connector.framework.cmd
 
     [JsonProperty("ResourcePool", NullValueHandling = NullValueHandling.Ignore)]
     public ResourcePool ResourcePool { get; set; }
-
-    internal IList<VerificationResult> Verify()
-    {
-      List<VerificationResult> results = new List<VerificationResult>();
-
-      return results;
-    }
   }
 }

@@ -10,8 +10,12 @@
           <Property ID="KeyProperty" Type="guid" Key="true"/>
           <Property ID="DataPropertyString" Type="int" />
           <Property ID="DataPropertyInt" Type="int" />
-          <Property ID="DataPropertyDouble" Type="double" Required="true" />
+          <Property ID="DataPropertyDouble" Type="double" />
           <Property ID="DataPropertyEnum" Type="enum" EnumType="connector.framework.cmd.test.classes.TestEnum"/>
+          <Property ID="DataPropertyDecimal" Type="decimal" MaxLength="38"/>
+          <Property ID="DataPropertyDateTime" Type="datetime"/>
+          <Property ID="DataPropertyBool" Type="bool"/>
+          <Property ID="DataPropertyRichtext" Type="richtext"/>
         </ClassType>
       
       </ClassTypes>
