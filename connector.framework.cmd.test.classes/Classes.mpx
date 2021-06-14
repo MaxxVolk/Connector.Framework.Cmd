@@ -1,0 +1,35 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TypeDefinitions>
+    <EntityTypes>
+      <ClassTypes>
+        <ClassType ID="connector.framework.cmd.test.classes.BaseUnhostedClass" Base="System!System.Entity" Accessibility="Public" Abstract="true" Hosted="false" Singleton="false">
+          <Property ID="KeyPropertyInt" Type="int" Key="true"/>
+          <Property ID="DataPropertyString" Type="string" />
+        </ClassType>
+        <ClassType ID="connector.framework.cmd.test.classes.UnhostedClass" Base="connector.framework.cmd.test.classes.BaseUnhostedClass" Accessibility="Public">
+          <Property ID="KeyProperty" Type="guid" Key="true"/>
+          <Property ID="DataPropertyString" Type="int" />
+          <Property ID="DataPropertyInt" Type="int" />
+          <Property ID="DataPropertyDouble" Type="double" Required="true" />
+          <Property ID="DataPropertyEnum" Type="enum" EnumType="connector.framework.cmd.test.classes.TestEnum"/>
+        </ClassType>
+      
+      </ClassTypes>
+      <EnumerationTypes>
+        <EnumerationValue ID="connector.framework.cmd.test.classes.TestEnum" Accessibility="Public"/>
+        <EnumerationValue ID="connector.framework.cmd.test.classes.TestEnum.Option_01" Accessibility="Public" Parent="connector.framework.cmd.test.classes.TestEnum"/>
+        <EnumerationValue ID="connector.framework.cmd.test.classes.TestEnum.Option_02" Accessibility="Public" Parent="connector.framework.cmd.test.classes.TestEnum"/>
+      </EnumerationTypes>
+    </EntityTypes>
+  </TypeDefinitions>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="connector.framework.cmd.test.classes.BaseUnhostedClass">
+          <Name>Test Class - Unhosted</Name>
+          <Description></Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -6,7 +7,7 @@ using Newtonsoft.Json;
 /// </summary>
 namespace connector.framework.cmd
 {
-  public class InstanceCollection
+  public partial class Instance
   {
     [JsonProperty("Children", NullValueHandling = NullValueHandling.Ignore)]
     public List<ClassAndInstancesReference> Children { get; set; }
@@ -17,10 +18,10 @@ namespace connector.framework.cmd
     [JsonProperty("ManagingActionPoint", NullValueHandling = NullValueHandling.Ignore)]
     public ManagingActionPoint ManagingActionPoint { get; set; }
 
-    [JsonProperty("Operation", Required = Required.Always)]
+    [JsonProperty("Operation", NullValueHandling = NullValueHandling.Ignore)]
     public Operation Operation { get; set; }
 
-    [JsonProperty("Properties", Required = Required.Always)]
+    [JsonProperty("Properties", NullValueHandling = NullValueHandling.Ignore)]
     public Dictionary<string, PropertyValue> Properties { get; set; }
   }
 }

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Converters;
 /// </summary>
 namespace connector.framework.cmd
 {
-  public class ImportFile
+  public partial class ImportFile
   {
     [JsonProperty("ClassAndInstaces", NullValueHandling = NullValueHandling.Ignore)]
     public ClassAndInstancesReference ClassAndInstaces { get; set; }

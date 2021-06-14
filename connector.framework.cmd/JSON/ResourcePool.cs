@@ -5,7 +5,7 @@
 /// </summary>
 namespace connector.framework.cmd
 {
-  public class ResourcePool
+  public partial class ResourcePool
   {
     [JsonProperty("DisplayName", NullValueHandling = NullValueHandling.Ignore)]
     public string DisplayName { get; set; }

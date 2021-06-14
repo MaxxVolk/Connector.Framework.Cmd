@@ -60,12 +60,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CredentialsUI.cs" />
+    <Compile Include="Functional\ClassAndInstancesReference.cs" />
+    <Compile Include="Functional\ClassReference.cs" />
+    <Compile Include="Functional\Connector.cs" />
+    <Compile Include="Functional\ImportFile.cs" />
+    <Compile Include="Functional\Instance.cs" />
+    <Compile Include="Functional\InstanceReference.cs" />
+    <Compile Include="Functional\ManagingActionPoint.cs" />
+    <Compile Include="Functional\ResourcePool.cs" />
+    <Compile Include="Functional\VerificationHelper.cs" />
+    <Compile Include="Functional\VerificationResult.cs" />
     <Compile Include="JSON\Converters.cs" />
     <Compile Include="JSON\ImportFile.cs" />
     <Compile Include="JSON\ClassAndInstancesReference.cs" />
     <Compile Include="JSON\ClassReference.cs" />
     <Compile Include="JSON\Connector.cs" />
-    <Compile Include="JSON\InstanceCollection.cs" />
+    <Compile Include="JSON\Instance.cs" />
     <Compile Include="JSON\InstanceReference.cs" />
     <Compile Include="JSON\ManagingActionPoint.cs" />
     <Compile Include="JSON\PropertyValue.cs" />
@@ -83,7 +94,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties example_3configuration_1json__JsonSchema="ConfigurationSchema.json" />
+      <UserProperties example_3configuration_1json__JsonSchema="http://json-schema.org/Maximus/ConnectorFrameworkCommandLine/schema" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

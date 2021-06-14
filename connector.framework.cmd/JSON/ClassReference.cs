@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Made with https://app.quicktype.io/.
@@ -8,7 +10,7 @@ namespace connector.framework.cmd
   /// <summary>
   /// Class is defined by either an Id (Guid) OR an MP name plus a class name.
   /// </summary>
-  public class ClassReference
+  public partial class ClassReference
   {
     [JsonProperty("ClassId", NullValueHandling = NullValueHandling.Ignore)]
     public string ClassId { get; set; }

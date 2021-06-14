@@ -6,7 +6,7 @@ using Newtonsoft.Json.Converters;
 
 namespace connector.framework.cmd
 {
-  public enum Operation { AddUpdate, Remove };
+  public enum Operation { AddUpdate, Remove, NotSpecified };
 
   internal static class Converter
   {
@@ -90,14 +90,17 @@ namespace connector.framework.cmd
 
     public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
     {
-      if (reader.TokenType == JsonToken.Null) return null;
-      var value = serializer.Deserialize<string>(reader);
+      if (reader.TokenType == JsonToken.Null) 
+        return Operation.NotSpecified;
+      string value = serializer.Deserialize<string>(reader);
       switch (value)
       {
         case "AddUpdate":
           return Operation.AddUpdate;
         case "Remove":
           return Operation.Remove;
+        default:
+          return Operation.NotSpecified;
       }
       throw new Exception("Cannot unmarshal type Operation");
     }

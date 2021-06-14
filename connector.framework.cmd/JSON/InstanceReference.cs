@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -6,7 +7,7 @@ using Newtonsoft.Json;
 /// </summary>
 namespace connector.framework.cmd
 {
-  public class InstanceReference
+  public partial class InstanceReference
   {
     [JsonProperty("Class", NullValueHandling = NullValueHandling.Ignore)]
     public ClassReference Class { get; set; }
@@ -16,5 +17,13 @@ namespace connector.framework.cmd
 
     [JsonProperty("Id", NullValueHandling = NullValueHandling.Ignore)]
     public string Id { get; set; }
+
+    internal IEnumerable<VerificationResult> Verify()
+    {
+      //TODO:  
+      List<VerificationResult> results = new List<VerificationResult>();
+
+      return results;
+    }
   }
 }

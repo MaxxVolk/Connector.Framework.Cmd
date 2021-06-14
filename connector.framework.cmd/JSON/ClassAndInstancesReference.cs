@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 /// <summary>
@@ -6,12 +7,12 @@ using Newtonsoft.Json;
 /// </summary>
 namespace connector.framework.cmd
 {
-  public class ClassAndInstancesReference
+  public partial class ClassAndInstancesReference
   {
     [JsonProperty("Class", NullValueHandling = NullValueHandling.Ignore)]
     public ClassReference Class { get; set; }
 
     [JsonProperty("InstanceCollection", NullValueHandling = NullValueHandling.Ignore)]
-    public List<InstanceCollection> InstanceCollection { get; set; }
+    public List<Instance> InstanceCollection { get; set; }
   }
 }

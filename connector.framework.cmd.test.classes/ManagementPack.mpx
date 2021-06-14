@@ -1,0 +1,12 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="connector.framework.cmd.test.classes">
+          <Name>Test Classes for Connector Framework Command Line Tool</Name>
+          <Description>This is not a functional management pack. It contain classes to test instance management with Connector Framework Command Line Tool.</Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>

@@ -1,12 +1,13 @@
 {
   "Connector": {
-    "Id": "95d30868-704a-4889-bf89-2ee4ec84c7eb"
+    "DisplayName": "", "Id": ""
+
   },
   "ClassAndInstaces": {
     "Class": {
       //"ClassId": "95d30868-704a-4889-bf89-2ee4ec84c7eb",
-      "ClassManagementPack": "ddd",
-      "ClassName": "fffd"
+      "ClassManagementPack": "connector.framework.cmd.test.classes",
+      "ClassName": "connector.framework.cmd.test.classes.UnhostedClass"
     },
     "InstanceCollection": [
       {
@@ -19,15 +20,7 @@
           "ResourcePool": {
             "DisplayName": "sss"
           }
-        },
-        "Children": [
-          {
-            "Class": {},
-            "InstanceCollection": [
-              {}
-            ]
-          }
-        ]
+        }
       }
     ]
   }
